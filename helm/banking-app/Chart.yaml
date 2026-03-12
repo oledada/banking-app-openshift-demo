@@ -1,0 +1,21 @@
+apiVersion: v2
+name: banking-app
+description: Helm chart pour l'application bancaire démo (frontend + backend Spring Boot)
+type: application
+
+# La version du chart (convention semver)
+version: 0.1.0
+
+# Version de l'application (celle que tu déploies)
+appVersion: "1.0.0"
+
+# Mainteneurs (optionnel mais bonne pratique)
+maintainers:
+  - name: Ton Nom ou Pseudo
+    email: ton.email@example.com
+
+# Dépendances (optionnel – ici on pourrait ajouter bitnami/postgresql si besoin)
+# dependencies:
+#   - name: postgresql
+#     version: "15.x.x"
+#     repository: "https://charts.bitnami.com/bitnami"

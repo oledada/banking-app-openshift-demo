@@ -1,0 +1,26 @@
+{{- if .Values.route.enabled -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "banking-app.fullname" . }}-backend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "banking-app.labels" . | nindent 4 }}
+    component: backend
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.host | default (printf "%s-backend.%s" (include "banking-app.fullname" .) .Values.global.domain | default "apps.example.com") }}
+  to:
+    kind: Service
+    name: {{ include "banking-app.fullname" . }}-backend
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: {{ .Values.route.tls.termination | default "edge" }}
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy | default "Redirect" }}
+  wildcardPolicy: {{ .Values.route.wildcardPolicy | default "None" }}
+{{- end -}}

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bank-postgres
+  namespace: banking-app          # ← change selon ton projet
+  labels:
+    app: postgres
+    component: database
+spec:
+  serviceName: bank-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: docker.io/library/postgres:16.4-alpine
+        # ou bitnami/postgresql:16 ou registry.redhat.io/rhel9/postgresql-16 si tu es sur OpenShift certifié
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 5432
+          name: postgres
+        
+        env:
+        - name: POSTGRES_USER
+          value: "bankuser"
+        - name: POSTGRES_PASSWORD
+          value: "banksecret123"           # À remplacer par un Secret en prod !
+        - name: POSTGRES_DB
+          value: "bankdb"
+        
+        # Variables recommandées pour production
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"
+        
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1"
+        
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - bankuser
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - bankuser
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi                # adapte selon tes besoins
+      # storageClassName: "gp3"       # décommente si tu veux forcer une classe spécifique

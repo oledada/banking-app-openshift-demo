@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: banking-frontend
+  namespace: banking-app
+  labels:
+    app: banking-frontend
+    tier: frontend
+spec:
+  host: banking-frontend.apps.<ton-cluster-domain>          # ← optionnel : si tu veux forcer un hostname
+                                                            # sinon OpenShift en génère un automatiquement
+  to:
+    kind: Service
+    name: banking-frontend
+    weight: 100
+  port:
+    targetPort: http                # correspond au nom du port dans le Service
+  tls:
+    termination: edge               # edge = TLS terminé à la route (recommandé)
+    insecureEdgeTerminationPolicy: Redirect   # redirige http → https
+  # wildcardPolicy: None          # décommente si tu veux des wildcards

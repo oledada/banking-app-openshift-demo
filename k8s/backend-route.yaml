@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: postgres-route
+spec:
+  to:
+    kind: Service
+    name: bank-postgres
+  port:
+    targetPort: 5432
+  tls:
+    termination: passthrough     # car PostgreSQL n'est pas en HTTP

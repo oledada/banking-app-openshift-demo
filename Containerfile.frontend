@@ -1,0 +1,11 @@
+# syntax=docker/dockerfile:1
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+# Copie les fichiers statiques du frontend
+COPY frontend/ /usr/share/nginx/html/
+
+# On expose le port (même si OpenShift l'ignore souvent)
+EXPOSE 8080
+
+# Nginx écoute déjà sur 8080 avec l'image unprivileged
+# Pas besoin de USER ni de chmod si tu respectes les permissions sur ton repo Git

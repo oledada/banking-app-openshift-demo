@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banking-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: banking-backend
+  template:
+    metadata:
+      labels:
+        app: banking-backend
+    spec:
+      containers:
+      - name: backend
+        image: quay.io/votre-compte/banking-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "bank-db-postgresql"
+        - name: DB_NAME
+          value: "bankdb"
+        - name: DB_USER
+          value: "bankuser"
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: bank-db-postgresql
+              key: password

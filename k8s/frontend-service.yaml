@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: banking-frontend
+  namespace: banking-app
+  labels:
+    app: banking-frontend
+    tier: frontend
+spec:
+  selector:
+    app: banking-frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8080          # correspond au port exposé dans le Containerfile
+  type: ClusterIP             # suffisant car on utilise une Route OpenShift
